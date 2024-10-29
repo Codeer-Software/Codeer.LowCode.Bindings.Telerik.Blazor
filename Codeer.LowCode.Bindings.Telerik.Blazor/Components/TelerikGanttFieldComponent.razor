@@ -1,0 +1,105 @@
+﻿@using Telerik.Blazor.Components
+@using Codeer.LowCode.Blazor.Components
+@using Codeer.LowCode.Bindings.Telerik.Blazor.Fields
+@using Codeer.LowCode.Bindings.Telerik.Blazor.Models
+@using global::Telerik.Blazor
+@using global::Telerik.Blazor.Components
+@using global::Telerik.SvgIcons
+@inherits FieldComponentBase<TelerikGanttField>
+
+    <div>
+    <TelerikGantt Data="Field.Tasks"
+                  Width="800px"
+                  Height="600px"
+                  IdField="@nameof(GanttTaskData.Id)"
+                  TitleField="@nameof(GanttTaskData.Name)"
+                  StartField="@nameof(GanttTaskData.Start)"
+                  EndField="@nameof(GanttTaskData.End)"
+                  PercentCompleteField="@nameof(GanttTaskData.Progress)"
+                  ParentIdField="@nameof(GanttTaskData.ParentId)"
+                  Sortable="true"
+                  ColumnResizable="true"
+                  SortMode="SortMode.Single"
+                  @bind-View="@Field.CurrentView"
+                  TreeListEditMode="GanttTreeListEditMode.Popup"
+                  OnCreate="CreateItem"
+                  OnUpdate="@UpdateItem"
+                  OnDelete="@DeleteItem">
+        <GanttToolBarTemplate>
+            <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
+        </GanttToolBarTemplate>
+        <GanttViews>
+            @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Day)) {
+                <GanttDayView/>
+            }
+            @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Week)) {
+                <GanttWeekView/>
+            }
+            @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Month)) {
+                <GanttMonthView/>
+            }
+            @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Year)) {
+                <GanttYearView/>
+            }
+        </GanttViews>
+        <GanttColumns>
+            <GanttColumn Field="@nameof(GanttTaskData.Name)">
+            </GanttColumn>
+            <GanttColumn Field="@(nameof(GanttTaskData.Progress))">
+            </GanttColumn>
+            <GanttColumn Field="@(nameof(GanttTaskData.Start))">
+            </GanttColumn>
+            <GanttColumn Field="@nameof(GanttTaskData.End)">
+            </GanttColumn>
+            <GanttCommandColumn>
+                <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus"></GanttCommandButton>
+                <GanttCommandButton Command="Delete" Icon="@SvgIcon.Trash"></GanttCommandButton>
+            </GanttCommandColumn>
+        </GanttColumns>
+        <GanttDependenciesSettings>
+            <GanttDependencies Data="Field.Dependencies"
+                               IdField="@nameof(DependencyListItem.DependencyId)"
+                               PredecessorIdField="@nameof(DependencyListItem.PredecessorId)"
+                               SuccessorIdField="@nameof(DependencyListItem.SuccessorId)"
+                               TypeField="@nameof(DependencyListItem.Type)"
+                               OnCreate="CreateDependency"
+                               OnDelete="DeleteDependency">
+            </GanttDependencies>
+        </GanttDependenciesSettings>
+    </TelerikGantt>
+    </div>
+
+@code {
+
+    protected override void OnParametersSet() {
+        base.OnParametersSet();
+        Field?.SetStateChangedReceiver(StateHasChanged);
+    }
+
+    private async void UpdateItem(GanttUpdateEventArgs obj) {
+        await Field.UpdateAsync((GanttTaskData)obj.Item);
+    }
+
+    private async void DeleteItem(GanttDeleteEventArgs obj) {
+        await Field.DeleteAsync((GanttTaskData)obj.Item);
+    }
+
+    private async void CreateDependency(GanttDependencyCreateEventArgs obj) {
+        await Field.AddDependencies(obj.PredecessorId.ToString()!, obj.SuccessorId.ToString()!);
+    }
+
+    private async void DeleteDependency(GanttDependencyDeleteEventArgs obj) {
+        var deps = (DependencyListItem)obj.Item;
+        await Field.DeleteDependencies(deps.PredecessorId, deps.SuccessorId);
+    }
+
+    private void AddItem(GanttAddEventArgs obj) {
+        ((GanttTaskData)obj.Item).Id = Guid.NewGuid().ToString();
+    }
+
+    private async void CreateItem(GanttCreateEventArgs obj) {
+        await Field.AddAsync((GanttTaskData)obj.Item);
+        StateHasChanged();
+    }
+
+}
