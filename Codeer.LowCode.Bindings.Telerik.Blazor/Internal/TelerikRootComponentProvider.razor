@@ -1,0 +1,16 @@
+﻿@using Codeer.LowCode.Blazor.RequestInterfaces
+@using Telerik.Blazor.Components
+@inject IAppInfoService AppInfoService
+
+@if (AppInfoService.IsDesignMode) {
+  <TelerikRootComponent>
+    @ChildContent
+  </TelerikRootComponent>
+} else {
+  @ChildContent
+}
+
+@code {
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+}
