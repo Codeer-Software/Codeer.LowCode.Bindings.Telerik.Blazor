@@ -1,6 +1,4 @@
-﻿using Telerik.Blazor.Components;
-using Telerik.Blazor.Components.Common;
-using Telerik.Blazor.Components.Gantt;
+﻿using Telerik.Blazor;
 
 namespace Codeer.LowCode.Bindings.Telerik.Blazor.Models
 {
@@ -19,6 +17,6 @@ namespace Codeer.LowCode.Bindings.Telerik.Blazor.Models
         public string DependencyId { get; set; } = string.Empty;
         public string PredecessorId { get; set; } = string.Empty;
         public string SuccessorId { get; set;} = string.Empty;
-        public DependencyType Type { get; set;} = DependencyType.FinishStart;
+        public GanttDependencyType Type { get; set;} = GanttDependencyType.FinishStart;
     }
 }
