@@ -15,7 +15,7 @@ LowCodeApp.Client.Shared プロジェクトにNuGetから次のパッケージ�
 ライブラリの使用に必要なコードを以下のプロジェクトにそれぞれ追加する必要があります。
 
 - LowCodeApp.Client
-- LowCodeApp.Shared
+- LowCodeApp.Server
 - LowCodeApp.Designer
 
 #### LowCodeApp.Client
