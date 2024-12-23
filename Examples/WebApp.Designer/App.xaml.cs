@@ -15,6 +15,8 @@ using WebApp.Client.Shared.ScriptObjects;
 using WebApp.Designer.Lib.ExcelImport;
 using WebApp.Designer.Lib.SeleniumPageObject;
 using WebApp.Designer.Views;
+using Telerik.Blazor;
+using Codeer.LowCode.Bindings.Telerik.Blazor.Fields;
 
 namespace WebApp.Designer
 {
@@ -22,6 +24,9 @@ namespace WebApp.Designer
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            typeof(GanttView).ToString();
+            typeof(TelerikGanttField).ToString();
+
             Codeer.LowCode.Blazor.License.LicenseManager.IsAutoUpdate =
                 bool.TryParse(ConfigurationManager.AppSettings["IsLicenseAutoUpdate"], out var val) ? val : true;
 

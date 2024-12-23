@@ -2,10 +2,12 @@ using Codeer.LowCode.Bindings.Telerik.Blazor.Designs;
 using Codeer.LowCode.Blazor.RequestInterfaces;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Telerik.Blazor;
 using WebApp.Client;
 using WebApp.Client.Shared;
 using WebApp.Client.Shared.Services;
 
+typeof(GanttView).ToString();
 typeof(TelerikGanttFieldDesign).ToString();
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);

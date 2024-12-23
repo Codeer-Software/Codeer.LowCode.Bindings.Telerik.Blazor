@@ -9,8 +9,10 @@ using WebApp.Client.Shared.Samples.ColorPicker;
 using WebApp.Server.Services;
 using WebApp.Server.Services.DataChangeHistory;
 using WebApp.Server.Services.FileManagement;
+using Telerik.Blazor;
 
 //load dll.
+typeof(GanttView).ToString();
 typeof(ColorPickerField).ToString();
 typeof(TelerikGanttField).ToString();
 
