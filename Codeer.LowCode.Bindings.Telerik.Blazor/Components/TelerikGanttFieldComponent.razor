@@ -6,27 +6,43 @@
 @using global::Telerik.Blazor.Components
 @using global::Telerik.SvgIcons
 @using Codeer.LowCode.Bindings.Telerik.Blazor.Internal
+@using Codeer.LowCode.Blazor.Components.Primitives
+@using Codeer.LowCode.Blazor.RequestInterfaces
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@inject IAppInfoService AppInfoService
 @inherits FieldComponentBase<TelerikGanttField>
 
+  
+@if (AppInfoService.IsDesignMode) {
+  <StyleLoader>
+    .field-container:has(> .telerik-gantt-field) { overflow: hidden; }
+  </StyleLoader>
+} else {
+  <StyleLoader>
+    .field-layout:has(> .telerik-gantt-field) { overflow: hidden; }
+  </StyleLoader>
+}
+
+@if(!_initialized) return;
+
 <TelerikRootComponentProvider>
-    <div>
+    <div class="telerik-gantt-field">
         <TelerikGantt Data="Field.Tasks"
-                      Width="800px"
-                      Height="600px"
-                      IdField="@nameof(GanttTaskData.Id)"
-                      TitleField="@nameof(GanttTaskData.Name)"
-                      StartField="@nameof(GanttTaskData.Start)"
-                      EndField="@nameof(GanttTaskData.End)"
-                      PercentCompleteField="@nameof(GanttTaskData.Progress)"
-                      ParentIdField="@nameof(GanttTaskData.ParentId)"
-                      Sortable="true"
-                      ColumnResizable="true"
-                      SortMode="SortMode.Single"
-                      @bind-View="@Field.CurrentView"
-                      TreeListEditMode="GanttTreeListEditMode.Popup"
-                      OnCreate="CreateItem"
-                      OnUpdate="@UpdateItem"
-                      OnDelete="@DeleteItem">
+        IdField="@nameof(GanttTaskData.Id)"
+        TitleField="@nameof(GanttTaskData.Name)"
+        StartField="@nameof(GanttTaskData.Start)"
+        EndField="@nameof(GanttTaskData.End)"
+        PercentCompleteField="@nameof(GanttTaskData.Progress)"
+        ParentIdField="@nameof(GanttTaskData.ParentId)"
+        Sortable="true"
+        ColumnResizable="true"
+        SortMode="SortMode.Single"
+        @bind-View="@Field.CurrentView"
+        TreeListEditMode="GanttTreeListEditMode.Popup"
+        OnCreate="CreateItem"
+        OnUpdate="@UpdateItem"
+        OnDelete="@DeleteItem">
             <GanttToolBarTemplate>
                 <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
             </GanttToolBarTemplate>
@@ -64,12 +80,12 @@
             </GanttColumns>
             <GanttDependenciesSettings>
                 <GanttDependencies Data="Field.Dependencies"
-                                   IdField="@nameof(DependencyListItem.DependencyId)"
-                                   PredecessorIdField="@nameof(DependencyListItem.PredecessorId)"
-                                   SuccessorIdField="@nameof(DependencyListItem.SuccessorId)"
-                                   TypeField="@nameof(DependencyListItem.Type)"
-                                   OnCreate="CreateDependency"
-                                   OnDelete="DeleteDependency">
+                IdField="@nameof(DependencyListItem.DependencyId)"
+                PredecessorIdField="@nameof(DependencyListItem.PredecessorId)"
+                SuccessorIdField="@nameof(DependencyListItem.SuccessorId)"
+                TypeField="@nameof(DependencyListItem.Type)"
+                OnCreate="CreateDependency"
+                OnDelete="DeleteDependency">
                 </GanttDependencies>
             </GanttDependenciesSettings>
         </TelerikGantt>
@@ -77,6 +93,16 @@
 </TelerikRootComponentProvider>
 
 @code {
+    private bool _initialized;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var _reference = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Codeer.LowCode.Bindings.Telerik.Blazor/awaiter.js");
+        await _reference.InvokeVoidAsync("waitForTelerikBlazor");
+        _initialized = true;
+        await _reference.DisposeAsync();
+    }
 
     protected override void OnParametersSet()
     {

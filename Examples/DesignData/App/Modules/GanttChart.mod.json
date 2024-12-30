@@ -75,7 +75,7 @@
         "Name": "",
         "IsBordered": false,
         "IsFlowLayout": false,
-        "IsFillAvailable": false,
+        "IsFillAvailable": true,
         "IsExpandable": false,
         "ExpanderLabel": "",
         "IsExpanderDefaultOpened": false,
@@ -93,7 +93,6 @@
                   "IsViewOnly": false,
                   "TypeFullName": "Codeer.LowCode.Blazor.Repository.Design.FieldLayoutDesign"
                 },
-                "Width": 1200,
                 "Border": "None",
                 "CanResize": false
               }
