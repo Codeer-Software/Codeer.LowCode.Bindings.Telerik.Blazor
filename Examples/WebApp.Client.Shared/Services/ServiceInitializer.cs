@@ -1,10 +1,10 @@
+using System.Globalization;
 using Codeer.LowCode.Blazor.Components.AppParts.Loading;
 using Codeer.LowCode.Blazor.Components.AppParts.PageFrame;
 using Codeer.LowCode.Blazor.Components.Dialog;
 using Codeer.LowCode.Blazor.RequestInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Sotsera.Blazor.Toaster.Core.Models;
-using System.Globalization;
 using WebApp.Client.Shared.AITextAnalyzer;
 
 namespace WebApp.Client.Shared.Services
@@ -19,6 +19,7 @@ namespace WebApp.Client.Shared.Services
             services.AddScoped<Codeer.LowCode.Blazor.RequestInterfaces.Services>();
             services.AddScoped<ILogger, Logger>();
             services.AddSingleton<ModuleDialogService>();
+            services.AddSingleton<ModulePanelService>();
             services.AddSingleton<MessageBoxService>();
             services.AddSingleton<LoadingService>();
             services.AddSingleton<PageFrameContext>();

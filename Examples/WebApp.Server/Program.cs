@@ -1,15 +1,16 @@
+using System.Globalization;
+using System.Text.Json.Serialization;
+using Codeer.LowCode.Bindings.Telerik.Blazor.Fields;
 using Codeer.LowCode.Blazor.Json;
 using Codeer.LowCode.Blazor.License;
 using Codeer.LowCode.Blazor.SystemSettings;
 using PdfSharp.Fonts;
-using System.Globalization;
-using System.Text.Json.Serialization;
-using Codeer.LowCode.Bindings.Telerik.Blazor.Fields;
+using Telerik.Blazor;
 using WebApp.Client.Shared.Samples.ColorPicker;
 using WebApp.Server.Services;
+using WebApp.Server.Services.AI;
 using WebApp.Server.Services.DataChangeHistory;
 using WebApp.Server.Services.FileManagement;
-using Telerik.Blazor;
 
 //load dll.
 typeof(GanttView).ToString();
@@ -23,6 +24,7 @@ GlobalFontSettings.FontResolver = new CustomFontResolver();
 LicenseManager.DomainLicense = builder.Configuration.GetSection("DomainLicense").Get<string>() ?? string.Empty;
 LicenseManager.IsAutoUpdate = builder.Configuration.GetSection("IsLicenseAutoUpdate").Get<bool>();
 SystemConfig.Instance.UseHotReload = builder.Configuration.GetSection("UseHotReload").Get<bool>();
+SystemConfig.Instance.CanScriptDebug = builder.Configuration.GetSection("CanScriptDebug").Get<bool>();
 SystemConfig.Instance.DataSources = builder.Configuration.GetSection("DataSources").Get<DataSource[]>() ?? [];
 SystemConfig.Instance.FileStorages = builder.Configuration.GetSection("FileStorages").Get<FileStorage[]>() ?? [];
 SystemConfig.Instance.DataChangeHistoryTableInfo = builder.Configuration.GetSection("DataChangeHistoryTableInfo").Get<DataChangeHistoryTableInfo[]>() ?? [];
@@ -61,6 +63,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
 });
+
+builder.Services.AddScoped<DataService>();
 
 var app = builder.Build();
 

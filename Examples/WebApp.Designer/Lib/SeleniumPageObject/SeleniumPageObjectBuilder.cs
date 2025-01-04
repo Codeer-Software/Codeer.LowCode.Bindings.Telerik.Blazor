@@ -1,8 +1,8 @@
-using Codeer.LowCode.Blazor.DesignLogic;
-using Codeer.LowCode.Blazor.Repository.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using Codeer.LowCode.Blazor.DesignLogic;
+using Codeer.LowCode.Blazor.Repository.Design;
 
 namespace WebApp.Designer.Lib.SeleniumPageObject
 {
@@ -21,12 +21,12 @@ namespace WebApp.Designer.Lib.SeleniumPageObject
 
             Directory.CreateDirectory(TargetPath);
 
-            foreach (var pageFrame in designData.PageFrames)
+            foreach (var pageFrame in designData.PageFrames.ToList())
             {
                 GeneratePageFramePageObject(pageFrame);
             }
 
-            foreach (var module in designData.Modules)
+            foreach (var module in designData.Modules.ToList())
             {
                 GeneratePageObject(module, ModuleLayoutType.Detail);
                 GeneratePageObject(module, ModuleLayoutType.List);

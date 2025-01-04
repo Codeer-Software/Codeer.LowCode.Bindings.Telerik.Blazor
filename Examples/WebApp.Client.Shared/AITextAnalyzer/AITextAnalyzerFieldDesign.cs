@@ -10,6 +10,9 @@ namespace Design.Samples.AIDocumentAnalyzer
     [ToolboxIcon(PackIconMaterialKind = "HeadSnowflakeOutline")]
     public class AITextAnalyzerFieldDesign() : FieldDesignBase(typeof(AITextAnalyzerFieldDesign).FullName!)
     {
+        [Designer(CandidateType = CandidateType.ScriptEvent)]
+        public string DataImportCompleted { get; set; } = string.Empty;
+
         public override string GetWebComponentTypeFullName() => typeof(AITextAnalyzerFieldComponent).FullName!;
         public override string GetSearchWebComponentTypeFullName() => string.Empty;
         public override string GetSearchControlTypeFullName() => string.Empty;

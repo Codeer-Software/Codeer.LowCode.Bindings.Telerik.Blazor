@@ -1,6 +1,6 @@
+using System.Net.Mail;
 using Codeer.LowCode.Blazor.Utils;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Mail;
 using WebApp.Server.Services;
 
 namespace WebApp.Server.Controllers

@@ -1,4 +1,5 @@
 using Codeer.LowCode.Blazor.DesignLogic;
+using Codeer.LowCode.Blazor.DesignLogic.Transfer;
 using Codeer.LowCode.Blazor.Repository;
 using Codeer.LowCode.Blazor.Repository.Data;
 using Codeer.LowCode.Blazor.Repository.Match;
@@ -18,9 +19,9 @@ namespace WebApp.Client.Shared.Services
         readonly ScriptRuntimeTypeManager _scriptRuntimeTypeManager = new();
         readonly ToasterEx _toaster;
         HubConnection? _hubConnection;
-        bool? _useHotReload;
         DesignData? _design;
         DateTime _lastHotReload = DateTime.Now;
+        SystemConfigForFront? _config;
 
         public ModuleData? CurrentUserData { get; private set; }
 
@@ -33,6 +34,8 @@ namespace WebApp.Client.Shared.Services
         public bool IsDesignMode => false;
 
         public DesignData GetDesignData() => _design ?? new();
+
+        public bool CanScriptDebug => _config?.CanScriptDebug == true;
 
         public AppInfoService(HttpService http, NavigationManager navigationManager, ILogger logger, ToasterEx toaster)
         {
@@ -53,8 +56,8 @@ namespace WebApp.Client.Shared.Services
             await InitializeHotReloadAsync();
             if (_design != null) return;
 
-            _design = await _http.GetFromJsonAsync<DesignData>($"/api/module_data/design") ?? new();
-            var currentUserModule = _design.Modules.FirstOrDefault(e => e.Name == _design.AppSettings.CurrentUserModuleDesignName);
+            _design = DesignDataTransferLogic.ToDesignData(await _http.GetFromStreamAsync($"/api/module_data/design"));
+            var currentUserModule = _design.Modules.Find(_design.AppSettings.CurrentUserModuleDesignName);
             if (currentUserModule == null || string.IsNullOrEmpty(CurrentUserId)) return;
             CurrentUserData = (await _http.PostAsJsonAsync<SearchCondition, Paging<ModuleData>>($"/api/module_data/list",
                 new()
@@ -84,12 +87,12 @@ namespace WebApp.Client.Shared.Services
 
         async Task InitializeHotReloadAsync()
         {
-            if (_useHotReload == null)
+            if (_config == null)
             {
-                _useHotReload = (await _http.GetFromJsonAsync<ValueWrapper<bool>>($"/api/module_data/use_hot_reload"))?.Value;
+                _config = await _http.GetFromJsonAsync<SystemConfigForFront>($"/api/module_data/config");
             }
 
-            if (_useHotReload == true && _hubConnection == null)
+            if (_config?.UseHotReload == true && _hubConnection == null)
             {
                 _hubConnection = new HubConnectionBuilder()
                     .WithUrl(_navigationManager.ToAbsoluteUri("/hot_reload_hub"))

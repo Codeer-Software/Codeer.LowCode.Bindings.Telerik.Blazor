@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.4" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Codeer.LowCode.Blazor" Version="1.0.41" />
+    <PackageReference Include="Codeer.LowCode.Blazor" Version="1.1.19" />
     <ProjectReference Include="..\..\Codeer.LowCode.Bindings.Telerik.Blazor\Codeer.LowCode.Bindings.Telerik.Blazor.csproj" />
     <ProjectReference Include="..\WebApp.Client.Shared\WebApp.Client.Shared.csproj" />
   </ItemGroup>

@@ -9,6 +9,7 @@
   "CanDelete": true,
   "CanBulkDataUpdate": false,
   "CanBulkDataDownload": false,
+  "UseListPageSubmitButton": false,
   "Fields": [
     {
       "DisplayName": "",
@@ -83,6 +84,9 @@
           {
             "IsWrap": false,
             "IsRowMarginRemoved": false,
+            "IsHeader": false,
+            "IsFooter": false,
+            "BackgroundColor": "",
             "Columns": [
               {
                 "Layout": {
@@ -93,6 +97,7 @@
                   "IsViewOnly": false,
                   "TypeFullName": "Codeer.LowCode.Blazor.Repository.Design.FieldLayoutDesign"
                 },
+                "Background": "",
                 "Border": "None",
                 "CanResize": false
               }
@@ -143,20 +148,27 @@
           {
             "IsWrap": false,
             "IsRowMarginRemoved": false,
+            "IsHeader": false,
+            "IsFooter": false,
+            "BackgroundColor": "",
             "Columns": [
               {
+                "Background": "",
                 "Border": "None",
                 "CanResize": false
               },
               {
+                "Background": "",
                 "Border": "None",
                 "CanResize": false
               },
               {
+                "Background": "",
                 "Border": "None",
                 "CanResize": false
               },
               {
+                "Background": "",
                 "Border": "None",
                 "CanResize": false
               }

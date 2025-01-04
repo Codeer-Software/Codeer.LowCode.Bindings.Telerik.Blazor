@@ -28,7 +28,7 @@ namespace WebApp.Client.Shared.Services
 
         public async Task<MemoryStream?> DownloadFile(string moduleName, string fieldName, string id)
         {
-            var result = await _http.GetAsync($"/api/module_data/download?moduleName={moduleName}&fieldName={fieldName}&id={id}");
+            var result = await _http.GetAsync($"/api/module_data/download?moduleName={moduleName}&fieldName={fieldName}&id={id}", false);
             if (result == null) return null;
             return (MemoryStream)await result.Content.ReadAsStreamAsync();
         }

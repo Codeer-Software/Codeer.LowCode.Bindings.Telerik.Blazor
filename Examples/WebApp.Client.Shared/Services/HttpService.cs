@@ -1,9 +1,9 @@
-using Codeer.LowCode.Blazor.Components.AppParts.Loading;
-using Codeer.LowCode.Blazor.Json;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Codeer.LowCode.Blazor.Components.AppParts.Loading;
+using Codeer.LowCode.Blazor.Json;
 
 namespace WebApp.Client.Shared.Services
 {
@@ -14,14 +14,6 @@ namespace WebApp.Client.Shared.Services
         readonly LoadingService _loadingService;
         readonly List<ErrorCheckerScope> _checkers = new List<ErrorCheckerScope>();
 
-        //Not actually used, for designers only
-        public HttpService()
-        {
-            _http = default!;
-            _logger = default!;
-            _loadingService = default!;
-        }
-
         public HttpService(HttpClient http, LoadingService loadingService, Codeer.LowCode.Blazor.RequestInterfaces.ILogger logger)
         {
             _http = http;
@@ -29,43 +21,46 @@ namespace WebApp.Client.Shared.Services
             _loadingService = loadingService;
         }
 
-        public async Task<TValue?> GetFromJsonAsync<TValue>(string url) where TValue : class
-            => await ExecuteReturnJson<TValue>(async () => await _http.GetAsync(url));
+        public async Task<TValue?> GetFromJsonAsync<TValue>(string url, bool loading = true) where TValue : class
+            => await ExecuteReturnJson<TValue>(async () => await _http.GetAsync(url), loading);
 
-        public async Task<HttpResponseMessage?> GetAsync(string? requestUri)
-             => await ExecuteReturnHttpResponseMessage(async () => await _http.GetAsync(requestUri));
+        public async Task<Stream?> GetFromStreamAsync(string url, bool loading = true)
+            => await ExecuteReturnStream(async () => await _http.GetAsync(url), loading);
 
-        public async Task<HttpResponseMessage?> PostAsync(string url, HttpContent data)
-             => await ExecuteReturnHttpResponseMessage(async () => await _http.PostAsync(url, data));
+        public async Task<HttpResponseMessage?> GetAsync(string? requestUri, bool loading = true)
+             => await ExecuteReturnHttpResponseMessage(async () => await _http.GetAsync(requestUri), loading);
 
-        public async Task<bool> PostAsJsonAsync<TValue>(string url, TValue data)
-             => await ExecuteReturnBool(async () => await _http.PostAsJsonAsync(url, data, CreateJsonOption()));
+        public async Task<HttpResponseMessage?> PostAsync(string url, HttpContent data, bool loading = true)
+             => await ExecuteReturnHttpResponseMessage(async () => await _http.PostAsync(url, data), loading);
 
-        public async Task<TResult?> PostAsJsonAsync<TValue, TResult>(string url, TValue data) where TResult : class
-             => await ExecuteReturnJson<TResult>(async () => await _http.PostAsJsonAsync(url, data, CreateJsonOption()));
+        public async Task<bool> PostAsJsonAsync<TValue>(string url, TValue data, bool loading = true)
+             => await ExecuteReturnBool(async () => await _http.PostAsJsonAsync(url, data, CreateJsonOption()), loading);
 
-        public async Task<TResult?> PostContentAsJsonAsync<TResult>(string requestUri, HttpContent? content) where TResult : class
-             => await ExecuteReturnJson<TResult>(async () => await _http.PostAsync(requestUri, content));
+        public async Task<TResult?> PostAsJsonAsync<TValue, TResult>(string url, TValue data, bool loading = true) where TResult : class
+             => await ExecuteReturnJson<TResult>(async () => await _http.PostAsJsonAsync(url, data, CreateJsonOption()), loading);
 
-        public async Task<HttpResponseMessage?> PostContent(string requestUri, HttpContent? content)
-             => await ExecuteReturnHttpResponseMessage(async () => await _http.PostAsync(requestUri, content));
+        public async Task<TResult?> PostContentAsJsonAsync<TResult>(string requestUri, HttpContent? content, bool loading = true) where TResult : class
+             => await ExecuteReturnJson<TResult>(async () => await _http.PostAsync(requestUri, content), loading);
 
-        public async Task<HttpResponseMessage?> PostAsJsonReturnHttpResponseAsync<TValue>(string url, TValue data)
-             => await ExecuteReturnHttpResponseMessage(async () => await _http.PostAsJsonAsync(url, data, CreateJsonOption()));
+        public async Task<HttpResponseMessage?> PostContent(string requestUri, HttpContent? content, bool loading = true)
+             => await ExecuteReturnHttpResponseMessage(async () => await _http.PostAsync(requestUri, content), loading);
 
-        public async Task<HttpResponseMessage?> PutAsync(string url, HttpContent data)
-             => await ExecuteReturnHttpResponseMessage(async () => await _http.PutAsync(url, data));
+        public async Task<HttpResponseMessage?> PostAsJsonReturnHttpResponseAsync<TValue>(string url, TValue data, bool loading = true)
+             => await ExecuteReturnHttpResponseMessage(async () => await _http.PostAsJsonAsync(url, data, CreateJsonOption()), loading);
 
-        public async Task<HttpResponseMessage?> DeleteAsync(string url)
-             => await ExecuteReturnHttpResponseMessage(async () => await _http.DeleteAsync(url));
+        public async Task<HttpResponseMessage?> PutAsync(string url, HttpContent data, bool loading = true)
+             => await ExecuteReturnHttpResponseMessage(async () => await _http.PutAsync(url, data), loading);
 
-        async Task<bool> ExecuteReturnBool(Func<Task<HttpResponseMessage>> a)
-            => await ExecuteReturnHttpResponseMessage(a) != null;
+        public async Task<HttpResponseMessage?> DeleteAsync(string url, bool loading = true)
+             => await ExecuteReturnHttpResponseMessage(async () => await _http.DeleteAsync(url), loading);
 
-        async Task<T?> ExecuteReturnJson<T>(Func<Task<HttpResponseMessage>> a) where T : class
+        async Task<bool> ExecuteReturnBool(Func<Task<HttpResponseMessage>> a, bool loading)
+            => await ExecuteReturnHttpResponseMessage(a, loading) != null;
+
+        async Task<T?> ExecuteReturnJson<T>(Func<Task<HttpResponseMessage>> a, bool loading) where T : class
         {
-            using var scope = _loadingService.StartLoading();
-            var response = await ExecuteReturnHttpResponseMessage(a);
+            using var scope = loading ? _loadingService.StartLoading() : null;
+            var response = await ExecuteReturnHttpResponseMessage(a, loading);
             try
             {
                 return response == null ? null : await response.Content.ReadFromJsonAsync<T>(CreateJsonOption());
@@ -77,9 +72,24 @@ namespace WebApp.Client.Shared.Services
             }
         }
 
-        async Task<HttpResponseMessage?> ExecuteReturnHttpResponseMessage(Func<Task<HttpResponseMessage>> a)
+        async Task<Stream?> ExecuteReturnStream(Func<Task<HttpResponseMessage>> a, bool loading)
         {
-            using var scope = _loadingService.StartLoading();
+            using var scope = loading ? _loadingService.StartLoading() : null;
+            var response = await ExecuteReturnHttpResponseMessage(a, loading);
+            try
+            {
+                return response == null ? null : await response.Content.ReadAsStreamAsync();
+            }
+            catch (Exception e)
+            {
+                await Error(HttpStatusCode.InternalServerError, e.Message);
+                return null;
+            }
+        }
+
+        async Task<HttpResponseMessage?> ExecuteReturnHttpResponseMessage(Func<Task<HttpResponseMessage>> a, bool loading)
+        {
+            using var scope = loading ? _loadingService.StartLoading() : null;
             try
             {
                 var response = await a();

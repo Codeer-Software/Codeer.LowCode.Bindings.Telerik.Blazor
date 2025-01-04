@@ -8,7 +8,8 @@
     <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Codeer.LowCode.Blazor.Designer" Version="1.0.41" />
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.0.0" />
+    <PackageReference Include="Codeer.LowCode.Blazor.Designer" Version="1.1.19" />
     <ProjectReference Include="..\..\Codeer.LowCode.Bindings.Telerik.Blazor\Codeer.LowCode.Bindings.Telerik.Blazor.csproj" />
     <ProjectReference Include="..\WebApp.Client.Shared\WebApp.Client.Shared.csproj" />
     <ProjectReference Include="..\WebApp.Server.Shared\WebApp.Server.Shared.csproj" />

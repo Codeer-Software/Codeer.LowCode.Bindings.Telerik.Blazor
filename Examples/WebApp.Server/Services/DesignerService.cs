@@ -1,5 +1,7 @@
 using Codeer.LowCode.Blazor.DesignLogic;
-using Codeer.LowCode.Blazor.Json;
+using Codeer.LowCode.Blazor.DesignLogic.Transfer;
+using Codeer.LowCode.Blazor.Repository.Data;
+using WebApp.Client.Shared.Services;
 
 namespace WebApp.Server.Services
 {
@@ -7,23 +9,24 @@ namespace WebApp.Server.Services
     {
         static object _sync = new();
         static DesignData _designData = new();
+        static TransferDesignData _transferData = new();
 
         internal static DesignData GetDesignData()
         {
             lock (_sync)
             {
-                _designData = DesignDataFileManager.GetDesignData(SystemConfig.Instance.DesignFileDirectory, _designData);
+                var designData = DesignDataFileManager.GetDesignData(SystemConfig.Instance.DesignFileDirectory, _designData);
+                if (ReferenceEquals(_designData, designData)) return _designData;
+                _designData = designData;
+                _transferData = _designData.CreateTransferDesignData();
                 return _designData;
             }
         }
 
-        internal static DesignData GetDesignDataForFront()
+        internal static byte[] GetDesignDataForFront(ModuleData? currentUser)
         {
-            var data = GetDesignData().JsonClone();
-            data.Modules.Clear();
-            data.Modules.AddRange(data.ModulesWithoutDataSourceInfo);
-            data.ModulesWithoutDataSourceInfo.Clear();
-            return data;
+            var data = GetDesignData();
+            return _transferData.AddResolvedPageFrames(data.ResolvePageFrames(new PageLinkUrlResolver(), currentUser)).ToBinary();
         }
 
         internal static MemoryStream? GetResource(string resourcePath)

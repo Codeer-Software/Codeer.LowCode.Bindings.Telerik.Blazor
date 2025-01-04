@@ -1,3 +1,6 @@
+using System.Data;
+using System.Data.Common;
+using System.Data.SQLite;
 using Codeer.LowCode.Blazor;
 using Codeer.LowCode.Blazor.DataIO.Db;
 using Codeer.LowCode.Blazor.DataIO.Db.Definition;
@@ -6,11 +9,9 @@ using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using MySql.Data.MySqlClient;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
-using System.Data;
-using System.Data.Common;
-using System.Data.SQLite;
 
 namespace WebApp.Server.Shared
 {
@@ -41,12 +42,6 @@ namespace WebApp.Server.Shared
         {
             _dataSources = dataSources;
             _dbContexts = dbContext;
-        }
-
-        public async Task<List<DbTableDefinition>?> GetCustomTableDefinitionsAsync(string dataSourceName)
-        {
-            await Task.CompletedTask;
-            return null;
         }
 
         public DataSource? GetDataSource(string dataSourceName)
@@ -148,6 +143,9 @@ namespace WebApp.Server.Shared
                     case DataSourceType.SQLite:
                         conn = new SQLiteConnection(dataSource.ConnectionString);
                         break;
+                    case DataSourceType.MySQL:
+                        conn = new MySqlConnection(dataSource.ConnectionString);
+                        break;
                     default: throw LowCodeException.Create("Invalid data source");
                 }
 
@@ -192,12 +190,6 @@ namespace WebApp.Server.Shared
             var conn = GetConnection(dataSourceName);
             return (await conn.QueryAsync<object>(query, CreateParameter(args), GetTransaction(dataSourceName))).Select(e => (IDictionary<string, object>)e).ToList();
         }
-
-        public virtual Task<string> SubmitIdentityUserAsync(string userId, Dictionary<string, object?> columnAndValue, string? password)
-            => throw new NotImplementedException();
-
-        public virtual Task DeleteIdentityUserAsync(string userId)
-            => throw new NotImplementedException();
 
         static Dictionary<string, object?> ToDictionary(IDataRecord record)
         {

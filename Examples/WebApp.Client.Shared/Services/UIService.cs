@@ -1,6 +1,6 @@
+using System.Reflection;
 using Codeer.LowCode.Blazor.Components.Dialog;
 using Microsoft.JSInterop;
-using System.Reflection;
 
 namespace WebApp.Client.Shared.Services
 {
@@ -11,10 +11,11 @@ namespace WebApp.Client.Shared.Services
 
         public UIService(
             ModuleDialogService moduleDialogService,
+            ModulePanelService modulePanelService,
             MessageBoxService messageBoxService,
              IJSRuntime JSRuntime,
              ToasterEx toaster
-        ) : base(moduleDialogService, messageBoxService)
+        ) : base(moduleDialogService, modulePanelService, messageBoxService)
         {
             _jsRuntime = JSRuntime;
             _toaster = toaster;

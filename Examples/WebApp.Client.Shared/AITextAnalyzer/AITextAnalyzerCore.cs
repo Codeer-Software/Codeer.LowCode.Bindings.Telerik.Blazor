@@ -1,6 +1,6 @@
+using System.Text;
 using Codeer.LowCode.Blazor.Json;
 using Codeer.LowCode.Blazor.Repository.Data;
-using System.Text;
 using WebApp.Client.Shared.Services;
 
 namespace WebApp.Client.Shared.AITextAnalyzer
@@ -12,11 +12,11 @@ namespace WebApp.Client.Shared.AITextAnalyzer
         public AITextAnalyzerCore(HttpService httpService)
             => _httpService = httpService;
 
-        public async Task<ModuleData?> FileToModuleData(string moduleName, string fileName, StreamContent content)
+        public async Task<ModuleData?> FileToModuleDataAsync(string moduleName, string fileName, StreamContent content)
             => await _httpService.PostContentAsJsonAsync<ModuleData>(
                 $"/api/ai_text_analyze/file?moduleName={moduleName}&fileName={fileName}", content);
 
-        public async Task<ModuleData?> TextToModuleData(string moduleName, string text)
+        public async Task<ModuleData?> TextToModuleDataAsync(string moduleName, string text)
         {
             var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "text", text } });
             var ret = await _httpService.PostAsync($"/api/ai_text_analyze/text?moduleName={moduleName}", content);
