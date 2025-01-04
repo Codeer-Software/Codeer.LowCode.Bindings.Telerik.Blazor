@@ -428,7 +428,7 @@ namespace Codeer.LowCode.Bindings.Telerik.Blazor.Fields
             return new ModuleGanttTaskData
             {
                 Module = data,
-                Id = id,
+                Id = id??string.Empty,
                 Name = name,
                 Start = start,
                 End = end,
