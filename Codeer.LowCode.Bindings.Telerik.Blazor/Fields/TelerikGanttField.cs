@@ -10,7 +10,6 @@ using Codeer.LowCode.Blazor.Repository.Match;
 using Codeer.LowCode.Blazor.Script;
 using Codeer.LowCode.Blazor.Script.Internal.ScriptServices;
 using Telerik.Blazor;
-using Telerik.Blazor.Components.Gantt;
 
 namespace Codeer.LowCode.Bindings.Telerik.Blazor.Fields
 {

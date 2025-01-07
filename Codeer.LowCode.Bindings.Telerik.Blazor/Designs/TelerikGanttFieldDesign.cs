@@ -20,6 +20,9 @@ namespace Codeer.LowCode.Bindings.Telerik.Blazor.Designs
             EnabledGanttViews.Day | EnabledGanttViews.Week | EnabledGanttViews.Month;
 
         [Designer]
+        public GanttColumns Columns { get; set; } = GanttColumns.Name | GanttColumns.Progress | GanttColumns.Start | GanttColumns.End;
+
+        [Designer]
         public GanttView InitialView { get; set; } = GanttView.Day;
 
         [Designer(Category = nameof(SearchCondition))]

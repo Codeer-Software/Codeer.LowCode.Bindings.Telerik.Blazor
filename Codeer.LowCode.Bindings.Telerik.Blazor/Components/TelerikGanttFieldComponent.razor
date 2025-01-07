@@ -13,7 +13,23 @@
 @inject IAppInfoService AppInfoService
 @inherits FieldComponentBase<TelerikGanttField>
 
-  
+<StyleLoader>
+  /* delete button */
+  .view-only .k-task:hover .k-task-actions,
+  /* resize handles */
+  .view-only .k-task:hover .k-resize-handle,
+  /* progress drag handle */
+  .view-only .k-task-wrap:hover .k-task-draghandle,
+  /* dependency handles */
+  .view-only .k-task-wrap:hover .k-task-dot,
+  /* drag overlay */
+  .view-only .k-gantt-marquee,
+  /* drag tooltip */
+  .view-only .k-gantt-resize-hint {
+  visibility: hidden;
+  }
+</StyleLoader>
+
 @if (AppInfoService.IsDesignMode) {
   <StyleLoader>
     .field-container:has(> .telerik-gantt-field) { overflow: hidden; }
@@ -24,121 +40,127 @@
   </StyleLoader>
 }
 
-@if(!_initialized) return;
+@if (!_initialized) return;
 
 <TelerikRootComponentProvider>
-    <div class="telerik-gantt-field">
-        <TelerikGantt Data="Field.Tasks"
-        IdField="@nameof(GanttTaskData.Id)"
-        TitleField="@nameof(GanttTaskData.Name)"
-        StartField="@nameof(GanttTaskData.Start)"
-        EndField="@nameof(GanttTaskData.End)"
-        PercentCompleteField="@nameof(GanttTaskData.Progress)"
-        ParentIdField="@nameof(GanttTaskData.ParentId)"
-        Sortable="true"
-        ColumnResizable="true"
-        SortMode="SortMode.Single"
-        @bind-View="@Field.CurrentView"
-        TreeListEditMode="GanttTreeListEditMode.Popup"
-        OnCreate="CreateItem"
-        OnUpdate="@UpdateItem"
-        OnDelete="@DeleteItem">
-            <GanttToolBarTemplate>
-                <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
-            </GanttToolBarTemplate>
-            <GanttViews>
-                @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Day))
-                {
-                    <GanttDayView />
-                }
-                @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Week))
-                {
-                    <GanttWeekView />
-                }
-                @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Month))
-                {
-                    <GanttMonthView />
-                }
-                @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Year))
-                {
-                    <GanttYearView />
-                }
-            </GanttViews>
-            <GanttColumns>
-                <GanttColumn Field="@nameof(GanttTaskData.Name)">
-                </GanttColumn>
-                <GanttColumn Field="@(nameof(GanttTaskData.Progress))">
-                </GanttColumn>
-                <GanttColumn Field="@(nameof(GanttTaskData.Start))">
-                </GanttColumn>
-                <GanttColumn Field="@nameof(GanttTaskData.End)">
-                </GanttColumn>
-                <GanttCommandColumn>
-                    <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus"></GanttCommandButton>
-                    <GanttCommandButton Command="Delete" Icon="@SvgIcon.Trash"></GanttCommandButton>
-                </GanttCommandColumn>
-            </GanttColumns>
-            <GanttDependenciesSettings>
-                <GanttDependencies Data="Field.Dependencies"
-                IdField="@nameof(DependencyListItem.DependencyId)"
-                PredecessorIdField="@nameof(DependencyListItem.PredecessorId)"
-                SuccessorIdField="@nameof(DependencyListItem.SuccessorId)"
-                TypeField="@nameof(DependencyListItem.Type)"
-                OnCreate="CreateDependency"
-                OnDelete="DeleteDependency">
-                </GanttDependencies>
-            </GanttDependenciesSettings>
-        </TelerikGantt>
-    </div>
+  <div class="telerik-gantt-field">
+    <TelerikGantt Class="@(Field.IsViewOnly ? "view-only" : "")"
+                  Data="Field.Tasks"
+                  IdField="@nameof(GanttTaskData.Id)"
+                  TitleField="@nameof(GanttTaskData.Name)"
+                  StartField="@nameof(GanttTaskData.Start)"
+                  EndField="@nameof(GanttTaskData.End)"
+                  PercentCompleteField="@nameof(GanttTaskData.Progress)"
+                  ParentIdField="@nameof(GanttTaskData.ParentId)"
+                  Sortable="true"
+                  ColumnResizable="true"
+                  SortMode="SortMode.Single"
+                  @bind-View="@Field.CurrentView"
+                  TreeListEditMode="GanttTreeListEditMode.Popup"
+                  OnCreate="CreateItem"
+                  OnEdit="EditItem"
+                  OnUpdate="UpdateItem"
+                  OnDelete="DeleteItem">
+      <GanttToolBarTemplate>
+        @if (!Field.IsViewOnly) {
+          <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
+        }
+      </GanttToolBarTemplate>
+      <GanttViews>
+        @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Day)) {
+          <GanttDayView/>
+        }
+        @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Week)) {
+          <GanttWeekView/>
+        }
+        @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Month)) {
+          <GanttMonthView/>
+        }
+        @if (Field.Design.EnabledGanttViews.HasFlag(EnabledGanttViews.Year)) {
+          <GanttYearView/>
+        }
+      </GanttViews>
+      <GanttColumns>
+        @if (Field.Design.Columns.HasFlag(GanttColumns.Name)) {
+          <GanttColumn Field="@nameof(GanttTaskData.Name)"/>
+        }
+        @if (Field.Design.Columns.HasFlag(GanttColumns.Progress)) {
+          <GanttColumn Field="@nameof(GanttTaskData.Progress)"/>
+        }
+        @if (Field.Design.Columns.HasFlag(GanttColumns.Start)) {
+          <GanttColumn Field="@nameof(GanttTaskData.Start)"/>
+        }
+        @if (Field.Design.Columns.HasFlag(GanttColumns.End)) {
+          <GanttColumn Field="@nameof(GanttTaskData.End)"/>
+        }
+        @if (!Field.IsViewOnly) {
+          <GanttCommandColumn>
+            <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus"></GanttCommandButton>
+            <GanttCommandButton Command="Delete" Icon="@SvgIcon.Trash"></GanttCommandButton>
+          </GanttCommandColumn>
+        }
+      </GanttColumns>
+      <GanttDependenciesSettings>
+        <GanttDependencies Data="Field.Dependencies"
+                           IdField="@nameof(DependencyListItem.DependencyId)"
+                           PredecessorIdField="@nameof(DependencyListItem.PredecessorId)"
+                           SuccessorIdField="@nameof(DependencyListItem.SuccessorId)"
+                           TypeField="@nameof(DependencyListItem.Type)"
+                           OnCreate="CreateDependency"
+                           OnDelete="DeleteDependency"/>
+      </GanttDependenciesSettings>
+    </TelerikGantt>
+  </div>
 </TelerikRootComponentProvider>
 
 @code {
-    private bool _initialized;
+  private bool _initialized;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        var _reference = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Codeer.LowCode.Bindings.Telerik.Blazor/awaiter.js");
-        await _reference.InvokeVoidAsync("waitForTelerikBlazor");
-        _initialized = true;
-        await _reference.DisposeAsync();
-    }
+  protected override async Task OnInitializedAsync() {
+    await base.OnInitializedAsync();
+    var reference = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Codeer.LowCode.Bindings.Telerik.Blazor/awaiter.js");
+    await reference.InvokeVoidAsync("waitForTelerikBlazor");
+    _initialized = true;
+    await reference.DisposeAsync();
+  }
 
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        Field?.SetStateChangedReceiver(StateHasChanged);
-    }
+  protected override void OnParametersSet() {
+    base.OnParametersSet();
+    Field?.SetStateChangedReceiver(StateHasChanged);
+  }
 
-    private async void UpdateItem(GanttUpdateEventArgs obj)
-    {
-        await Field.UpdateAsync((GanttTaskData)obj.Item);
-    }
+  private void EditItem(GanttEditEventArgs args) {
+    args.IsCancelled = Field.IsViewOnly;
+  }
 
-    private async void DeleteItem(GanttDeleteEventArgs obj)
-    {
-        await Field.DeleteAsync((GanttTaskData)obj.Item);
-    }
+  private async void UpdateItem(GanttUpdateEventArgs obj) {
+    if (Field.IsViewOnly) return;
+    await Field.UpdateAsync((GanttTaskData)obj.Item);
+    StateHasChanged();
+  }
 
-    private async void CreateDependency(GanttDependencyCreateEventArgs obj)
-    {
-        await Field.AddDependencies(obj.PredecessorId.ToString()!, obj.SuccessorId.ToString()!);
-    }
+  private async void DeleteItem(GanttDeleteEventArgs obj) {
+    if (Field.IsViewOnly) return;
+    await Field.DeleteAsync((GanttTaskData)obj.Item);
+    StateHasChanged();
+  }
 
-    private async void DeleteDependency(GanttDependencyDeleteEventArgs obj)
-    {
-        var deps = (DependencyListItem)obj.Item;
-        await Field.DeleteDependencies(deps.PredecessorId, deps.SuccessorId);
-    }
+  private async void CreateDependency(GanttDependencyCreateEventArgs obj) {
+    await Field.AddDependencies(obj.PredecessorId.ToString()!, obj.SuccessorId.ToString()!);
+  }
 
-    private void AddItem(GanttAddEventArgs obj)
-    {
-        ((GanttTaskData)obj.Item).Id = Guid.NewGuid().ToString();
-    }
+  private async void DeleteDependency(GanttDependencyDeleteEventArgs obj) {
+    var deps = (DependencyListItem)obj.Item;
+    await Field.DeleteDependencies(deps.PredecessorId, deps.SuccessorId);
+  }
 
-    private async void CreateItem(GanttCreateEventArgs obj)
-    {
-        await Field.AddAsync((GanttTaskData)obj.Item);
-        StateHasChanged();
-    }
+  private void AddItem(GanttAddEventArgs obj) {
+    ((GanttTaskData)obj.Item).Id = Guid.NewGuid().ToString();
+  }
+
+  private async void CreateItem(GanttCreateEventArgs obj) {
+    await Field.AddAsync((GanttTaskData)obj.Item);
+    StateHasChanged();
+  }
+
 }
