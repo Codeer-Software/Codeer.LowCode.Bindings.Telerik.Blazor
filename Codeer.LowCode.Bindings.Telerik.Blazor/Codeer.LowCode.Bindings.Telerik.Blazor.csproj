@@ -17,6 +17,10 @@
     <PackageId>Codeer.LowCode.Bindings.Telerik.Blazor</PackageId>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <StaticWebAssetFingerprintingEnabled>false</StaticWebAssetFingerprintingEnabled>
+    <StaticWebAssetsFingerprintContent>false</StaticWebAssetsFingerprintContent>
+  </PropertyGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
